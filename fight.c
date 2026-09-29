@@ -263,13 +263,21 @@ attack(THING *mp)
 			msg("you suddenly feel weaker");
 		    }
 		when 'F':
+		{
 		    /*
 		     * Venus Flytrap stops the poor guy from moving
 		     */
+		    char dmg[32];
+
 		    player.t_flags |= ISHELD;
-		    sprintf(monsters['F'-'A'].m_stats.s_dmg,"%dx1", ++vf_hit);
+		    snprintf(dmg, sizeof dmg, "%dx1", ++vf_hit);
+		    strncpy(monsters['F'-'A'].m_stats.s_dmg, dmg,
+			sizeof monsters['F'-'A'].m_stats.s_dmg - 1);
+		    monsters['F'-'A'].m_stats.s_dmg[
+			sizeof monsters['F'-'A'].m_stats.s_dmg - 1] = '\0';
 		    if (--pstats.s_hpt <= 0)
 			death('F');
+		}
 		when 'L':
 		{
 		    /*

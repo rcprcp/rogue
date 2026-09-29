@@ -17,10 +17,12 @@
 typedef struct
 {
     int pa_flags;
-    void (*pa_daemon)();
+    void (*pa_daemon)(void *);
     int pa_time;
     char *pa_high, *pa_straight;
 } PACT;
+
+static void turn_see_timeout(void *arg);
 
 static PACT p_actions[] =
 {
@@ -97,13 +99,13 @@ quaff()
 	    {
 		chg_str(-(rnd(3) + 1));
 		msg("you feel very sick now");
-		come_down();
+		come_down(NULL);
 	    }
 	when P_HEALING:
 	    pot_info[P_HEALING].oi_know = TRUE;
 	    if ((pstats.s_hpt += roll(pstats.s_lvl, 4)) > max_hp)
 		pstats.s_hpt = ++max_hp;
-	    sight();
+	    sight(NULL);
 	    msg("you begin to feel better");
 	when P_STRENGTH:
 	    pot_info[P_STRENGTH].oi_know = TRUE;
@@ -111,7 +113,7 @@ quaff()
 	    msg("you feel stronger, now.  What bulging muscles!");
 	when P_MFIND:
 	    player.t_flags |= SEEMONST;
-	    fuse((void(*)())turn_see, TRUE, HUHDURATION, AFTER);
+	    fuse(turn_see_timeout, TRUE, HUHDURATION, AFTER);
 	    if (!turn_see(FALSE))
 		msg("you have a %s feeling for a moment, then it passes",
 		    choose_str("normal", "strange"));
@@ -169,7 +171,7 @@ quaff()
 	    do_pot(P_SEEINVIS, FALSE);
 	    if (!show)
 		invis_on();
-	    sight();
+	    sight(NULL);
 	when P_RAISE:
 	    pot_info[P_RAISE].oi_know = TRUE;
 	    msg("you suddenly feel much more skillful");
@@ -182,8 +184,8 @@ quaff()
 		    ++max_hp;
 		pstats.s_hpt = ++max_hp;
 	    }
-	    sight();
-	    come_down();
+	    sight(NULL);
+	    come_down(NULL);
 	    msg("you begin to feel much better");
 	when P_HASTE:
 	    pot_info[P_HASTE].oi_know = TRUE;
@@ -261,6 +263,17 @@ invis_on()
     for (mp = mlist; mp != NULL; mp = next(mp))
 	if (on(*mp, ISINVIS) && see_monst(mp) && !on(player, ISHALU))
 	    mvaddch(mp->t_pos.y, mp->t_pos.x, mp->t_disguise);
+}
+
+/*
+ * turn_see_timeout:
+ *	Adapter used to run turn_see() as a fuse.  The fuse argument is
+ *	the boolean the delayed action was started with.
+ */
+static void
+turn_see_timeout(void *arg)
+{
+    turn_see((bool)(long)arg);
 }
 
 /*

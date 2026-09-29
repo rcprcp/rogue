@@ -201,7 +201,7 @@ dropcheck(THING *obj)
 		chg_str(-obj->o_arm);
 		break;
 	    case R_SEEINVIS:
-		unsee();
+		unsee(NULL);
 		extinguish(unsee);
 		break;
 	}

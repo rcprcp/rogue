@@ -126,32 +126,32 @@ extern FILE	*scoreboard;
  * Function types
  */
 
-void    auto_save(int);
-void	come_down();
-void	doctor();
+void	auto_save(int);
+void	come_down(void *arg);
+void	doctor(void *arg);
 void	end_line();
-void    endit(int sig);
-void	fatal();
+void	endit(int sig);
+void	fatal(char *s);
 void	getltchars();
-void	land();
-void    leave(int);
-void	my_exit();
-void	nohaste();
+void	land(void *arg);
+void	leave(int);
+void	my_exit(int st);
+void	nohaste(void *arg);
 void	playit();
-void    playltchars(void);
+void	playltchars(void);
 void	print_disc(char);
-void    quit(int);
-void    resetltchars(void);
-void	rollwand();
-void	runners();
-void	set_order();
-void	sight();
-void	stomach();
-void	swander();
+void	quit(int);
+void	resetltchars(void);
+void	rollwand(void *arg);
+void	runners(void *arg);
+void	set_order(int *order, int numthings);
+void	sight(void *arg);
+void	stomach(void *arg);
+void	swander(void *arg);
 void	tstp(int ignored);
-void	unconfuse();
-void	unsee();
-void	visuals();
+void	unconfuse(void *arg);
+void	unsee(void *arg);
+void	visuals(void *arg);
 
 char	add_line(char *fmt, char *arg);
 

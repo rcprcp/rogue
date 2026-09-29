@@ -12,16 +12,37 @@
 
 **November 2025**:
 
-I want to express my sincere appreciation to everyone who has contributed to this repository, attempted to fix issues, and forked the project over the years. When I originally created this repository in [July 2016](https://github.com/Davidslv/rogue/releases/tag/5.4.4), I was young and fascinated by this classic game. My primary intention was to archive the codebase for learning purposes, and I never expected the community engagement that followed.
+I want to express my sincere appreciation to everyone who has contributed to this repository, attempted to fix issues, and forked the project over the years. When I originally created this repository in [July 2016](https://github.com/rcprcp/rogue/releases/tag/5.4.4), I was young and fascinated by this classic game. My primary intention was to archive the codebase for learning purposes, and I never expected the community engagement that followed.
 
 **Important**: I am not one of the original authors of Rogue. I am simply maintaining this repository as an archive of the original game.
 
 **Repository Policy**:
-- The **`main` branch** will remain unchanged to preserve the game exactly as it was in 1999. This ensures the original codebase remains available in its historical state.
-- For modernization efforts, bug fixes, and improvements, please use the branch: **[modern-rogue](https://github.com/Davidslv/rogue/tree/modern-rogue)**
+- The **`master` branch** is frozen and holds the game exactly as it was released in 1999, with the original C sources unmodified. This preserves the historical codebase in its original state.
+- All modernization work, bug fixes and improvements live on the **`modernization` branch**. This is where you should send pull requests.
 - You are welcome to fork this repository and make your own modifications. Many have done so over the years, and I encourage continued development in your own forks.
 
 Thank you for your interest in preserving and improving this classic game! ❤️
+
+> **You are reading this on the `modernization` branch.** The same document exists on `master`, where it describes the unmodernized code and its known build failure. Switch branches if you are looking for the original 1999 sources.
+
+### Current Modernization State
+
+This branch carries modernization changes across 12 source files (`chase.c`, `daemon.c`, `daemons.c`, `extern.h`, `fight.c`, `main.c`, `new_level.c`, `potions.c`, `rip.c`, `rogue.h`, `state.c`, `things.c`). The pristine 1999 sources are on `master`, and remain available at the initial import commit `cf9bd26`.
+
+What has been modernized so far:
+
+| Area | Change |
+| --- | --- |
+| Daemon/fuse callbacks | All callbacks now take `void *arg` and all function-pointer types are `void (*)(void *)` (was `void (*)()`) |
+| `main.c` | Removed direct writes to ncurses internals `curscr->_cury` / `curscr->_curx` — this was the build blocker on modern ncurses |
+| `fight.c` | Replaced unbounded `sprintf` into `m_stats.s_dmg` with `snprintf` + explicit bounds + forced NUL |
+| `state.c` | `new_item(sizeof(THING))` → `new_item()`; the allocator takes no size argument |
+| `potions.c` | Added `turn_see_timeout()` adapter, since `turn_see()` takes a `bool` and no longer matches the `void *` fuse signature |
+| `rip.c` | Removed a local `struct tm *localtime();` re-declaration that shadowed the system prototype |
+
+The daemon/fuse conversion in particular is behaviour-relevant, not just cosmetic: the `void *` argument is now produced with the portable `(void *)(long)` idiom, and the previous untyped `void (*)()` call would have been undefined behaviour under a modern prototype.
+
+**See [BUILD_ISSUES.md](BUILD_ISSUES.md) for the archived ncurses build-failure report.** The issue it documents has been fixed; the document is kept for historical reference only.
 
 ---
 
@@ -52,7 +73,7 @@ make
 
 **Note**: The executable name defaults to `rogue`, but may be different if configured with `--with-program-name`. Check the output of `make` to see the actual executable name.
 
-**Note**: If you encounter compilation errors, especially related to ncurses compatibility, see [BUILD_ISSUES.md](BUILD_ISSUES.md) for known issues and workarounds.
+**Note**: The ncurses build failure documented in [BUILD_ISSUES.md](BUILD_ISSUES.md) has been fixed on this branch — `./configure && make` succeeds against modern ncurses. That document is retained for historical reference. **On `master` the bug is still present** and the build will fail; use this branch.
 
 ---
 
@@ -272,8 +293,10 @@ export SEED=12345
 ```
 rogue.h              # Main header with data structures and defines
 extern.h             # External declarations and platform defines
+score.h              # SCORE struct used by the scoreboard
 main.c               # Entry point, initialization, main game loop
 command.c            # Command processing and input handling
+vers.c               # Version string, salt/verification strings
 ```
 
 ### Game Systems
@@ -324,8 +347,12 @@ daemons.c            # Daemon management
 move.c               # Player and monster movement
 pack.c               # Inventory management
 save.c               # Save/load game state
-state.c              # Game state management
+state.c              # Game state management (serialization)
 init.c               # Initialization routines
+misc.c               # Assorted helpers (levitating, aggravate, direction input)
+options.c            # Option parsing and the `-o` interactive options screen
+wizard.c             # Wizard-only commands
+xcrypt.c             # DES-based password hashing (wizard password)
 extern.c             # Global variable definitions
 ```
 
@@ -342,7 +369,40 @@ mdport.c             # Platform abstraction layer
 configure.ac         # Autoconf configuration
 Makefile.in          # Makefile template
 config.h.in          # Config header template
+Makefile.std         # Autotools-free fallback makefile (builds 'rogue54')
 ```
+
+### Generated vs. Source Files
+
+The tree mixes committed sources with build output, and there is **no `.gitignore`**, so generated files show up as untracked noise in `git status`. Know which is which:
+
+*Generated by `./configure` (never commit):*
+```
+Makefile
+config.h
+config.log
+config.status
+```
+
+*Generated by `make` (never commit):*
+```
+*.o
+rogue          # the executable
+```
+
+*Generated from `.in` templates by `make` (never commit):*
+```
+rogue.6   rogue.cat   rogue.doc   rogue.html   rogue.me
+```
+
+*Also generated at runtime — `rogue.scr` is the live scoreboard, not source:*
+```
+rogue.scr
+```
+
+Adding a `.gitignore` covering these patterns is a worthwhile first contribution.
+
+**Note**: the `Makefile` also contains `findpw`, `scedit` and `dist.src` targets whose sources (`findpw.c`, `scedit.c`, `scmisc.c`) are not present in this repository. Those targets cannot succeed; use `make`, not `make findpw` / `make scedit`.
 
 ---
 
@@ -350,13 +410,32 @@ config.h.in          # Config header template
 
 ### Code Style
 
-This codebase follows classic C (pre-C99) conventions:
+This codebase is classic C (pre-C99) with a partially-completed modernization pass on top. It is currently **mixed**, so match the file you are editing:
 
-- Uses `register` keyword for frequently accessed variables
-- Custom macros for control flow (`when`, `otherwise`, `on()`, etc.)
-- Linked lists for dynamic data structures
-- Bit flags for object/monster states
-- Function declarations in headers, definitions in `.c` files
+- **Daemon/fuse callbacks** use `void (*func)(void *)` throughout, and each callback body takes an unused `void *arg`. See [Current Modernization State](#current-modernization-state).
+- **Most other functions still use K&R-style empty parens.** There are roughly 105 function *definitions* written as `foo()` rather than `foo(void)`, concentrated in `mdport.c` (24), `mach_dep.c` (11), `command.c` (8), and `init.c`/`misc.c` (6 each). Correspondingly, ~97 declarations in `rogue.h` and `extern.h` lack prototypes. New code should use `(void)`.
+- Uses `register` for frequently accessed variables (82 occurrences across 8 files, mostly `chase.c`, `fight.c`, `command.c`). It is functionally a no-op on modern compilers.
+- Custom macros for control flow: `when` / `otherwise` expand to `break;case` / `break;default`; `until(expr)` is `while(!(expr))`; `on(thing,flag)` is a bit test; `ce(a,b)` is coordinate equality.
+- Linked lists for dynamic data structures, with `next`/`prev`/`attach`/`detach`/`free_list` macros in `rogue.h`.
+- Bit flags for object/monster states.
+- Function declarations in headers, definitions in `.c` files.
+
+### Known Code Issues
+
+These are real defects found during review and are **not yet fixed**. They are listed here so contributors do not rediscover them.
+
+| Location | Issue |
+| --- | --- |
+| `list.c:98` `new_item()` | Dereferences the `calloc` result unconditionally. In non-`MASTER` builds the return is never checked; in `MASTER` builds `msg()` reports failure but does not return. A failed allocation is a guaranteed NULL dereference, reachable from 19 call sites including the save-restore path (`state.c:1416`). |
+| `wizard.c:239` `passwd()` | Unbounded write into `static char buf[MAXSTR]` — the input loop does `*sp++ = c` with no bounds check. Compare `options.c:get_str()`, which bounds correctly. Wizard builds only. |
+| `mdport.c:690` `md_getpass()` | Calls `getpass()` and casts the result to `char *`, but the prototype is undeclared under strict ISO modes (`-std=c11`, `-std=c99`), so glibc's implicit `int` return triggers `cast to pointer from integer of different size`. Compiles clean under `gnu89`/`gnu11`. `getpass()` is also removed from POSIX.1-2008. |
+| `save.c:172` | Misleading indentation: the `fopen` block is not guarded by the preceding `if`, but reads as though it were. |
+| `things.c` `inv_name()` | 28 chained `sprintf` calls build into the global `prbuf`, relying on a single clamp at the end (`things.c:132`) rather than per-step bounds. Follow the `fight.c` pattern instead. |
+| `rogue.h`, `extern.h`, `score.h`, `config.h` | No include guards. Including `rogue.h` twice fails to compile. |
+| `extern.h:123` | Uses `FILE` without including `<stdio.h>`; compiles only because `curses.h` happens to be included first in every `.c` file. |
+| `main.c:23` | `main(int argc, char **argv, char **envp)` — the third parameter is not ISO C. It is consumed by `restore()` (`save.c:167`), so removing it is a real refactor, not a cosmetic change. |
+
+With the project's default `CFLAGS` (`-g -O2`, no `-Wall`) the build is clean apart from two `fgets` return-value warnings (`mach_dep.c:406`, `rip.c:272`). Auditing with `gcc -std=gnu11 -Wall -Wextra` emits 57 warnings: 40 are benign missing-field-initializers in the static tables (`extern.c`, `potions.c`, `init.c`); the rest are the sign-compare, boolean-increment and indentation issues above. Under strict ISO modes (`-std=c11`, `-std=c99`) add the `getpass` cast warning described in [Troubleshooting](#troubleshooting).
 
 ### Key Data Structures
 
@@ -408,14 +487,16 @@ main()
 
 ### Daemons and Fuses
 
-**Daemons** are background processes that run every turn:
-- `runners()` - Monster movement
-- `doctor()` - Health regeneration
-- `stomach()` - Hunger system
-- `swander()` - Wandering monsters
+**Daemons** are background processes that run every turn. All take an unused `void *arg`:
+- `runners(void *arg)` - Monster movement
+- `doctor(void *arg)` - Health regeneration
+- `stomach(void *arg)` - Hunger system
+- `swander(void *arg)` - Wandering monsters
 
 **Fuses** are one-time delayed actions:
 - Used for temporary effects (haste, confusion, etc.)
+
+**Contract**: every daemon and fuse is registered as `void (*)(void *)` via `start_daemon()` / `fuse()` and stored in `d_list[]` (`rogue.h:729`). The `int` argument passed at registration is carried in the `d_arg` field and converted with the portable `(void *)(long)` idiom at the call site (`daemon.c:112`, `daemon.c:179`). **A callback whose real signature is not `void (*)(void *)` needs an adapter** — see `turn_see_timeout()` in `potions.c`, which wraps `turn_see(bool)`.
 
 ### Adding New Features
 
@@ -514,7 +595,7 @@ When reporting bugs, please include:
 
 ## Troubleshooting
 
-**Note**: For detailed information about known build issues, especially on modern systems, see [BUILD_ISSUES.md](BUILD_ISSUES.md).
+**Note**: The historical ncurses build issue is preserved in [BUILD_ISSUES.md](BUILD_ISSUES.md) but has since been fixed — see [Current Modernization State](#current-modernization-state). The entries below cover live problems.
 
 ### Build Issues
 
@@ -564,7 +645,11 @@ make
 
 **Problem**: Compilation errors about incomplete type 'WINDOW' or `curscr->_cury` / `curscr->_curx`
 
-**Solution**: This is a known compatibility issue with modern ncurses. The codebase attempts to access internal ncurses structure members that are not available in modern ncurses libraries. See [BUILD_ISSUES.md](BUILD_ISSUES.md) for detailed information about this issue and potential fixes.
+**Solution**: This was a real compatibility problem with modern ncurses, and was **fixed on the `modernization` branch** — the offending writes at the end of `tstp()` in `main.c` have been removed; the preceding `mvcur(y, x, oy, ox)` handles cursor restoration. If you still see this error you are on `master` (or building commit `cf9bd26` or earlier), which retains the bug by design. See [BUILD_ISSUES.md](BUILD_ISSUES.md) for the original report.
+
+**Problem**: `cast to pointer from integer of different size` from `mdport.c`
+
+**Solution**: Only appears under strict ISO modes. `getpass()` is hidden by glibc when `__STRICT_ANSI__` is set, so the call is implicitly typed as returning `int`. Build with the default GNU dialect (`gnu11`/`gnu89`) instead of `-std=c11`, or see the `mdport.c` entry in [Known Code Issues](#known-code-issues) for the proper fix.
 
 **Problem**: `make: command not found`
 

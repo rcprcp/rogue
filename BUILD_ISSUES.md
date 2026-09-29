@@ -1,5 +1,36 @@
 # Build Issues Found During README Testing
 
+> ## ⚠️ RESOLVED ON `modernization` — ARCHIVED FOR REFERENCE ⚠️
+>
+> **This document describes the `master` branch, which still has the bug. Do
+> not act on the "Next Steps" or "Recommendations" sections below.**
+>
+> The critical ncurses build failure described here (Issue 1: `incomplete
+> definition of type 'WINDOW'` from `curscr->_cury` / `curscr->_curx` in
+> `main.c`) **has been fixed on the `modernization` branch.** The offending
+> direct writes to ncurses internals were removed from the end of `tstp()`;
+> the preceding `mvcur(y, x, oy, ox)` handles cursor restoration.
+>
+> On the **`modernization` branch**, `./configure && make` succeeds against
+> modern ncurses. Verified on Linux with GCC.
+>
+> On **`master`**, the bug is retained by design. The `master` branch is
+> frozen to preserve the 1999 sources, so the build failure documented here
+> is still live there. Check out `modernization` to build the game.
+>
+> This file is **retained deliberately** rather than deleted, to preserve a
+> record of the defect and of the reasoning behind the fix. Treat every
+> statement below as describing **`master`**, i.e. the code as of the
+> original import commit `cf9bd26`.
+>
+> For the current state of the code, see the
+> [Current Modernization State](README.md#current-modernization-state) and
+> [Known Code Issues](README.md#known-code-issues) sections of `README.md`.
+
+---
+
+## Archived Report Below
+
 This document lists issues encountered when following the README.md build instructions on macOS (darwin 25.0.0, Apple Silicon).
 
 ## Date
