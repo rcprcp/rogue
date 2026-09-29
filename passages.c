@@ -20,7 +20,7 @@
  */
 
 void
-do_passages()
+do_passages(void)
 {
     struct rdes *r1, *r2 = NULL;
     int i, j;
@@ -319,7 +319,7 @@ door(struct room *rm, coord *cp)
  */
 
 void
-add_pass()
+add_pass(void)
 {
     PLACE *pp;
     int y, x;
@@ -361,7 +361,7 @@ static bool newpnum;
 
 
 void
-passnum()
+passnum(void)
 {
     struct room *rp;
     int i;

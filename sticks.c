@@ -45,7 +45,7 @@ fix_stick(THING *cur)
  */
 
 void
-do_zap()
+do_zap(void)
 {
     THING *obj, *tp;
     int y, x;
@@ -246,7 +246,7 @@ do_zap()
  */
 
 void
-drain()
+drain(void)
 {
     THING *mp;
     struct room *corp;

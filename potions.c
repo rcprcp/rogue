@@ -58,7 +58,7 @@ static PACT p_actions[] =
  */
 
 void
-quaff()
+quaff(void)
 {
     THING *obj, *tp, *mp;
     bool discardit = FALSE;
@@ -255,7 +255,7 @@ is_magic(THING *obj)
  */
 
 void
-invis_on()
+invis_on(void)
 {
     THING *mp;
 
@@ -323,7 +323,7 @@ turn_see(bool turn_off)
  *	Return TRUE if the player has seen the stairs
  */
 bool
-seen_stairs()
+seen_stairs(void)
 {
     THING	*tp;
 
@@ -354,7 +354,7 @@ seen_stairs()
  */
 
 void
-raise_level()
+raise_level(void)
 {
     pstats.s_exp = e_levels[pstats.s_lvl-1] + 1L;
     check_level();

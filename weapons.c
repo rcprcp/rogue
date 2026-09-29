@@ -223,7 +223,7 @@ num(int n1, int n2, char type)
  */
 
 void
-wield()
+wield(void)
 {
     THING *obj, *oweapon;
     char *sp;

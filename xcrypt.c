@@ -222,7 +222,7 @@ ascii_to_bin(char ch)
 }
 
 static void
-des_init()
+des_init(void)
 {
 	int	i, j, b, k, inbit, obit;
 	unsigned int	*p, *il, *ir, *fl, *fr;

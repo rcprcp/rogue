@@ -19,7 +19,7 @@
  */
 
 void
-ring_on()
+ring_on(void)
 {
     THING *obj;
     int ring;
@@ -91,7 +91,7 @@ ring_on()
  */
 
 void
-ring_off()
+ring_off(void)
 {
     int ring;
     THING *obj;
@@ -127,7 +127,7 @@ ring_off()
  *	Which hand is the hero interested in?
  */
 int
-gethand()
+gethand(void)
 {
     int c;
 

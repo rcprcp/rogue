@@ -21,7 +21,7 @@
  *	Roll her up
  */
 void
-init_player()
+init_player(void)
 {
     register THING *obj;
 
@@ -237,7 +237,7 @@ static bool used[MAX3(NCOLORS, NSTONES, NWOOD)];
  *	Initialize the potion color scheme for this time
  */
 void
-init_colors()
+init_colors(void)
 {
     register int i, j;
 
@@ -260,7 +260,7 @@ init_colors()
 #define MAXNAME	40	/* Max number of characters in a name */
 
 void
-init_names()
+init_names(void)
 {
     register int nsyl;
     register char *cp, *sp;
@@ -294,7 +294,7 @@ init_names()
  *	Initialize the ring stone setting scheme for this time
  */
 void
-init_stones()
+init_stones(void)
 {
     register int i, j;
 
@@ -316,7 +316,7 @@ init_stones()
  *	Initialize the construction materials for wands and staffs
  */
 void
-init_materials()
+init_materials(void)
 {
     register int i, j;
     register char *str;
@@ -402,7 +402,7 @@ sumprobs(struct obj_info *info, int bound
  *	Initialize the probabilities for the various items
  */
 void
-init_probs()
+init_probs(void)
 {
     sumprobs(things, NT);
     sumprobs(pot_info, MP);

@@ -220,7 +220,7 @@ turn_ok(int y, int x)
  */
 
 void
-turnref()
+turnref(void)
 {
     PLACE *pp;
 

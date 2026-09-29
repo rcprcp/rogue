@@ -32,7 +32,7 @@ static STAT sbuf;
  */
 
 void
-save_game()
+save_game(void)
 {
     FILE *savef;
     int c;

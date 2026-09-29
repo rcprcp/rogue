@@ -241,7 +241,7 @@ erase_lamp(coord *pos, struct room *rp)
  *	Should we show the floor in her room at this time?
  */
 bool
-show_floor()
+show_floor(void)
 {
     if ((proom->r_flags & (ISGONE|ISDARK)) == ISDARK && !on(player, ISBLIND))
 	return see_floor;
@@ -279,7 +279,7 @@ find_obj(int y, int x)
  */
 
 void
-eat()
+eat(void)
 {
     THING *obj;
 
@@ -320,7 +320,7 @@ eat()
  */
 
 void
-check_level()
+check_level(void)
 {
     int i, add, olevel;
 
@@ -405,7 +405,7 @@ add_haste(bool potion)
  */
 
 void
-aggravate()
+aggravate(void)
 {
     THING *mp;
 
@@ -460,7 +460,7 @@ is_current(THING *obj)
  *	commands
  */
 bool
-get_dir()
+get_dir(void)
 {
     char *prompt;
     bool gotit;
@@ -571,7 +571,7 @@ call_it(struct obj_info *info)
  *	Pick a random thing appropriate for this level
  */
 char
-rnd_thing()
+rnd_thing(void)
 {
     int i;
     static char thing_list[] = {

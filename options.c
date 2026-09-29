@@ -68,7 +68,7 @@ OPTION	optlist[] = {
  */
 
 void
-option()
+option(void)
 {
     OPTION	*op;
     int		retval;

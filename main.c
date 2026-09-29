@@ -247,7 +247,7 @@ tstp(int ignored)
  */
 
 void
-playit()
+playit(void)
 {
     char *opts;
 
@@ -351,7 +351,7 @@ leave(int sig)
  */
 
 void
-shell()
+shell(void)
 {
     /*
      * Set the terminal back to original mode

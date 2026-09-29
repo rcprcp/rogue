@@ -1,0 +1,33 @@
+# Build output from ./configure
+/Makefile
+/config.h
+/config.log
+/config.status
+/stamp-h1
+
+# Compiled objects and the executable
+*.o
+/rogue
+/rogue.exe
+
+# Runtime state
+# rogue.scr is the live scoreboard; rogue.lck is its lock file
+/rogue.scr
+/rogue.lck
+/rogue.save
+
+# Documentation generated from the committed .in templates by `make`.
+# The .in files themselves (rogue.6.in, rogue.me.in, ...) ARE tracked.
+/rogue.6
+/rogue.cat
+/rogue.doc
+/rogue.html
+/rogue.me
+
+# Editor and OS noise
+*~
+*.swp
+.DS_Store
+
+# NOTE: .quarkus/ is a stray Quarkus CLI cache unrelated to this C project.
+# It is intentionally not ignored here - remove or relocate it instead.

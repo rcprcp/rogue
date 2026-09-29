@@ -75,7 +75,7 @@ static int num_checks;		/* times we've gone over in checkout() */
  */
 
 void
-init_check()
+init_check(void)
 {
 #if defined(MAXLOAD) || defined(MAXUSERS)
     if (too_much())
@@ -97,7 +97,7 @@ init_check()
  */
 
 void
-open_score()
+open_score(void)
 {
 #ifdef SCOREFILE
     char *scorefile = SCOREFILE;
@@ -134,7 +134,7 @@ open_score()
  */
 
 void
-setup()
+setup(void)
 {
 #ifdef CHECKTIME
     int  checkout();
@@ -163,7 +163,7 @@ setup()
  */
 
 void
-getltchars()
+getltchars(void)
 {
     got_ltc = TRUE;
     orig_dsusp = md_dsuspchar();
@@ -200,7 +200,7 @@ playltchars(void)
  */
 
 void
-start_score()
+start_score(void)
 {
 #ifdef CHECKTIME
     md_stop_checkout_timer();
@@ -233,7 +233,7 @@ is_symlink(char *sp)
  *	See if the system is being used too much for this game
  */
 bool
-too_much()
+too_much(void)
 {
 #ifdef MAXLOAD
     double avec[3];
@@ -258,7 +258,7 @@ too_much()
  *	See if a user is an author of the program
  */
 bool
-author()
+author(void)
 {
 #ifdef MASTER
     if (wizard)
@@ -344,7 +344,7 @@ chmsg(char *fmt, int arg)
 struct utmp buf;
 
 int
-ucount()
+ucount(void)
 {
     struct utmp *up;
     FILE *utmp;
@@ -371,7 +371,7 @@ ucount()
  */
 static FILE *lfd = NULL;
 bool
-lock_sc()
+lock_sc(void)
 {
 #if defined(SCOREFILE) && defined(LOCKFILE)
     int cnt;
@@ -435,7 +435,7 @@ over:
  */
 
 void
-unlock_sc()
+unlock_sc(void)
 {
 #if defined(SCOREFILE) && defined(LOCKFILE)
     if (lfd != NULL)
@@ -451,7 +451,7 @@ unlock_sc()
  */
 
 void
-flush_type()
+flush_type(void)
 {
     flushinp();
 }

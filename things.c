@@ -139,7 +139,7 @@ inv_name(THING *obj, bool drop)
  */
 
 void
-drop()
+drop(void)
 {
     char ch;
     THING *obj;
@@ -214,7 +214,7 @@ dropcheck(THING *obj)
  *	Return a new thing
  */
 THING *
-new_thing()
+new_thing(void)
 {
     THING *cur;
     int r;
@@ -340,7 +340,7 @@ static char *lastfmt, *lastarg;
 
 
 void
-discovered()
+discovered(void)
 {
     char ch;
     bool disc_list;
@@ -565,7 +565,7 @@ add_line(char *fmt, char *arg)
  */
 
 void
-end_line()
+end_line(void)
 {
     if (inv_type != INV_SLOW)
     {
@@ -656,7 +656,7 @@ nullstr(THING *ignored)
  */
 
 void
-pr_list()
+pr_list(void)
 {
     int ch;
 

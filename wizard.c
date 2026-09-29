@@ -125,7 +125,7 @@ type_name(int type)
  */
 
 void
-create_obj()
+create_obj(void)
 {
     THING *obj;
     char ch, bless;
@@ -197,7 +197,7 @@ create_obj()
  */
 
 void
-teleport()
+teleport(void)
 {
     static coord c;
 
@@ -236,7 +236,7 @@ teleport()
  *	See if user knows password
  */
 int
-passwd()
+passwd(void)
 {
     char *sp, c;
     static char buf[MAXSTR];
@@ -263,7 +263,7 @@ passwd()
  */
 
 void
-show_map()
+show_map(void)
 {
     int y, x, real;
 

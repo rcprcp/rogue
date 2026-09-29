@@ -111,7 +111,7 @@
 #define NOOP(x) (x += 0)
 
 void
-md_init()
+md_init(void)
 {
 #if defined(__INTERIX)
     char *term;
@@ -138,7 +138,7 @@ md_init()
 }
 
 void
-md_onsignal_default()
+md_onsignal_default(void)
 {
 #ifdef SIGHUP
     signal(SIGHUP, SIG_DFL);
@@ -176,7 +176,7 @@ md_onsignal_default()
 }
 
 void
-md_onsignal_exit()
+md_onsignal_exit(void)
 {
 #ifdef SIGHUP
     signal(SIGHUP, SIG_DFL);
@@ -214,7 +214,7 @@ md_onsignal_exit()
 }
 
 void
-md_onsignal_autosave()
+md_onsignal_autosave(void)
 {
 #ifdef SIGHUP
     signal(SIGHUP, auto_save);
@@ -255,7 +255,7 @@ md_onsignal_autosave()
 }
 
 int
-md_hasclreol()
+md_hasclreol(void)
 {
 #if defined(clr_eol)
 #ifdef NCURSES_VERSION
@@ -283,7 +283,7 @@ static int md_standout_mode = 0;
 #endif
 
 void
-md_raw_standout()
+md_raw_standout(void)
 {
 #ifdef _WIN32
     CONSOLE_SCREEN_BUFFER_INFO csbiInfo; 
@@ -306,7 +306,7 @@ md_raw_standout()
 }
 
 void
-md_raw_standend()
+md_raw_standend(void)
 {
 #ifdef _WIN32
     CONSOLE_SCREEN_BUFFER_INFO csbiInfo; 
@@ -362,7 +362,7 @@ md_chmod(char *filename, int mode)
 }
 
 void
-md_normaluser()
+md_normaluser(void)
 {
 #if defined(HAVE_GETGID) && defined(HAVE_GETUID)
 	gid_t realgid = getgid();
@@ -397,7 +397,7 @@ md_normaluser()
 }
 
 int
-md_getuid()
+md_getuid(void)
 {
 #ifdef HAVE_GETUID
     return( getuid() );
@@ -407,7 +407,7 @@ md_getuid()
 }
 
 int
-md_getpid()
+md_getpid(void)
 {
 #ifdef _WIN32
     return( _getpid() );
@@ -417,7 +417,7 @@ md_getpid()
 }
 
 char *
-md_getusername()
+md_getusername(void)
 {
     static char login[80];
     char *l = NULL;
@@ -450,7 +450,7 @@ md_getusername()
 }
 
 char *
-md_gethomedir()
+md_gethomedir(void)
 {
     static char homedir[PATH_MAX];
     char *h = NULL;
@@ -517,7 +517,7 @@ md_sleep(int s)
 }
 
 char *
-md_getshell()
+md_getshell(void)
 {
     static char shell[PATH_MAX];
     char *s = NULL;
@@ -544,7 +544,7 @@ md_getshell()
 }
 
 int
-md_shellescape()
+md_shellescape(void)
 {
 #if defined(HAVE_WORKING_FORK)
     int ret_status;
@@ -692,7 +692,7 @@ md_getpass(char *prompt)
 }
 
 int
-md_erasechar()
+md_erasechar(void)
 {
 #ifdef HAVE_ERASECHAR
     return( erasechar() ); /* process erase character */
@@ -704,7 +704,7 @@ md_erasechar()
 }
 
 int
-md_killchar()
+md_killchar(void)
 {
 #ifdef HAVE_KILLCHAR
     return( killchar() );
@@ -716,7 +716,7 @@ md_killchar()
 }
 
 int
-md_dsuspchar()
+md_dsuspchar(void)
 {
 #if defined(VDSUSP)			/* POSIX has priority */
     struct termios attr;
@@ -753,7 +753,7 @@ md_setdsuspchar(int c)
 }
 
 int
-md_suspchar()
+md_suspchar(void)
 {
 #if defined(VSUSP)			/* POSIX has priority */
     struct termios attr;
@@ -1077,7 +1077,7 @@ md_setsuspchar(int c)
 #define M_TRAIL  3
 
 int
-md_readchar()
+md_readchar(void)
 {
     int ch = 0;
     int lastch = 0;
@@ -1370,7 +1370,7 @@ md_loadav(double *avg)
 #endif
 
 void
-md_ignoreallsignals()
+md_ignoreallsignals(void)
 {
 	int i;
 
@@ -1379,7 +1379,7 @@ md_ignoreallsignals()
 }
 
 void
-md_tstphold()
+md_tstphold(void)
 {
 #ifdef SIGTSTP
     /*
@@ -1394,7 +1394,7 @@ md_tstphold()
 }
 
 void
-md_tstpresume()
+md_tstpresume(void)
 {
 #ifdef SIGTSTP
     signal(SIGTSTP, tstp);
@@ -1402,7 +1402,7 @@ md_tstpresume()
 }
 
 void
-md_tstpsignal()
+md_tstpsignal(void)
 {
 #ifdef SIGTSTP
     kill(0, SIGTSTP);		/* send actual signal and suspend process */
@@ -1422,7 +1422,7 @@ md_start_checkout_timer(int time)
 }
 
 void
-md_stop_checkout_timer()
+md_stop_checkout_timer(void)
 {
 #if defined(SIGALRM)
     signal(SIGALRM, SIG_IGN);

@@ -65,7 +65,7 @@ addmsg(char *fmt, ...)
  *	if it is up there with the --More--)
  */
 int
-endmsg()
+endmsg(void)
 {
     char ch;
 
@@ -148,7 +148,7 @@ step_ok(int ch)
  *	Reads and returns a character, checking for gross input errors
  */
 char
-readchar()
+readchar(void)
 {
     char ch;
 
@@ -168,7 +168,7 @@ readchar()
  *	Display the important stats line.  Keep the cursor where it was.
  */
 void
-status()
+status(void)
 {
     register int oy, ox, temp;
     static int hpwidth = 0;

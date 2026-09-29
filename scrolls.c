@@ -20,7 +20,7 @@
  */
 
 void
-read_scroll()
+read_scroll(void)
 {
     THING *obj;
     PLACE *pp;

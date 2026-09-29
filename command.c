@@ -21,7 +21,7 @@
  *	Process the user commands
  */
 void
-command()
+command(void)
 {
     register char ch;
     register int ntimes = 1;			/* Number of player moves */
@@ -471,7 +471,7 @@ illcom(int ch)
  *	player gropes about him to find hidden things.
  */
 void
-search()
+search(void)
 {
     register int y, x;
     register char *fp;
@@ -535,7 +535,7 @@ foundone:
  *	Give single character help, or the whole mess if he wants it
  */
 void
-help()
+help(void)
 {
     register struct h_list *strp;
     register char helpch;
@@ -605,7 +605,7 @@ help()
  *	Tell the player what a certain thing is.
  */
 void
-identify()
+identify(void)
 {
     register int ch;
     register struct h_list *hp;
@@ -660,7 +660,7 @@ identify()
  *	He wants to go down a level
  */
 void
-d_level()
+d_level(void)
 {
     if (levit_check())
 	return;
@@ -679,7 +679,7 @@ d_level()
  *	He wants to go up a level
  */
 void
-u_level()
+u_level(void)
 {
     if (levit_check())
 	return;
@@ -704,7 +704,7 @@ u_level()
  *	appropriate message.
  */
 bool
-levit_check()
+levit_check(void)
 {
     if (!on(player, ISLEVIT))
 	return FALSE;
@@ -717,7 +717,7 @@ levit_check()
  *	Allow a user to call a potion, scroll, or ring something
  */
 void
-call()
+call(void)
 {
     register THING *obj;
     register struct obj_info *op = NULL;

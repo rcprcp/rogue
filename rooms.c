@@ -28,7 +28,7 @@ typedef struct spot {		/* position matrix for maze positions */
  */
 
 void
-do_rooms()
+do_rooms(void)
 {
     int i;
     struct room *rp;

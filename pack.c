@@ -229,7 +229,7 @@ leave_pack(THING *obj, bool newobj, bool all)
  *	Return the next unused pack character.
  */
 char
-pack_char()
+pack_char(void)
 {
     bool *bp;
 
@@ -349,7 +349,7 @@ move_msg(THING *obj)
  */
 
 void
-picky_inven()
+picky_inven(void)
 {
     THING *obj;
     char mch;
@@ -466,7 +466,7 @@ money(int value)
  *	Return the appropriate floor character for her room
  */
 char
-floor_ch()
+floor_ch(void)
 {
     if (proom->r_flags & ISGONE)
 	return PASSAGE;
@@ -479,7 +479,7 @@ floor_ch()
  *	into account
  */
 char
-floor_at()
+floor_at(void)
 {
     char ch;
 
@@ -495,7 +495,7 @@ floor_at()
  */
 
 void
-reset_last()
+reset_last(void)
 {
     last_comm = l_last_comm;
     last_dir = l_last_dir;

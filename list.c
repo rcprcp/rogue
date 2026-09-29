@@ -95,7 +95,7 @@ discard(THING *item)
  *	Get a new item with a specified size
  */
 THING *
-new_item()
+new_item(void)
 {
     THING *item;
 
