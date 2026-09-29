@@ -137,7 +137,7 @@ void
 setup(void)
 {
 #ifdef CHECKTIME
-    int  checkout();
+    int  checkout(int sig);
 #endif
 
 #ifdef DUMP

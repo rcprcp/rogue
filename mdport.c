@@ -1413,7 +1413,7 @@ md_tstpsignal(void)
 void
 md_start_checkout_timer(int time)
 {
-    int  checkout();
+    int  checkout(int sig);
 
 #if defined(HAVE_ALARM) && defined(SIGALRM)
     signal(SIGALRM, checkout);
