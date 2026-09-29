@@ -160,7 +160,7 @@ char	*nothing(char type);
 char	*type_name(int type);
 
 #ifdef CHECKTIME
-int	checkout(int sig);
+void	checkout(int sig);
 #endif
 
 int	md_chmod(char *filename, int mode);
@@ -194,4 +194,12 @@ void md_onsignal_autosave(void);
 void md_onsignal_exit(void);
 void md_onsignal_default(void);
 int md_issymlink(char *sp);
+
+#ifdef CHECKTIME
+void	md_start_checkout_timer(int time);
+void	md_stop_checkout_timer(void);
+void	chmsg(char *fmt, ...);
+bool	too_much(void);
+bool	author(void);
+#endif
 

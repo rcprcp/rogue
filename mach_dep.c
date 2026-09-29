@@ -46,8 +46,9 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <time.h>
+#include <stdarg.h>
 #include <curses.h>
-#include "extern.h"
+#include "rogue.h"
 
 #define NOOP(x) (x += 0)
 
@@ -137,7 +138,7 @@ void
 setup(void)
 {
 #ifdef CHECKTIME
-    int  checkout(int sig);
+    void  checkout(int sig);
 #endif
 
 #ifdef DUMP
@@ -227,7 +228,13 @@ is_symlink(char *sp)
 #endif 
 } 
 
-#if defined(MAXLOAD) || defined(MAXUSERS)
+/*
+ * too_much, author:
+ *	Needed by the CHECKTIME load monitor, and by the --enable-maxload
+ *	and --enable-maxusers checks.  checkout() calls both, so CHECKTIME
+ *	alone must pull them in even when neither threshold is configured.
+ */
+#if defined(CHECKTIME) || defined(MAXLOAD) || defined(MAXUSERS)
 /*
  * too_much:
  *	See if the system is being used too much for this game
@@ -280,6 +287,7 @@ author(void)
  *	Check each CHECKTIME seconds to see if the load is too high
  */
 
+void
 checkout(int sig)
 {
     static char *msgs[] = {
@@ -288,6 +296,8 @@ checkout(int sig)
 	"Last warning.  You have %0.1f minutes to leave",
     };
     int checktime;
+
+    NOOP(sig);
 
     if (too_much())
     {
@@ -318,16 +328,29 @@ checkout(int sig)
  * chmsg:
  *	checkout()'s version of msg.  If we are in the middle of a
  *	shell, do a printf instead of a msg to a the refresh.
+ *
+ *	Variadic: the load warnings format a double with %0.1f, so this
+ *	must forward a real va_list.  It used to take (char *, int),
+ *	which truncated the argument and misread it as an int.
  */
-/* VARARGS1 */
 
-chmsg(char *fmt, int arg)
+void
+chmsg(char *fmt, ...)
 {
+    va_list args;
+
     if (!in_shell)
-	msg(fmt, arg);
+    {
+	va_start(args, fmt);
+	doadd(fmt, args);
+	va_end(args);
+	(void) endmsg();
+    }
     else
     {
-	printf(fmt, arg);
+	va_start(args, fmt);
+	vprintf(fmt, args);
+	va_end(args);
 	putchar('\n');
 	fflush(stdout);
     }
