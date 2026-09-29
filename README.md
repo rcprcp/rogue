@@ -12,16 +12,38 @@
 
 **November 2025**:
 
-I want to express my sincere appreciation to everyone who has contributed to this repository, attempted to fix issues, and forked the project over the years. When I originally created this repository in [July 2016](https://github.com/Davidslv/rogue/releases/tag/5.4.4), I was young and fascinated by this classic game. My primary intention was to archive the codebase for learning purposes, and I never expected the community engagement that followed.
+I want to express my sincere appreciation to everyone who has contributed to this repository, attempted to fix issues, and forked the project over the years. When I originally created this repository in [July 2016](https://github.com/rcprcp/rogue/releases/tag/5.4.4), I was young and fascinated by this classic game. My primary intention was to archive the codebase for learning purposes, and I never expected the community engagement that followed.
 
 **Important**: I am not one of the original authors of Rogue. I am simply maintaining this repository as an archive of the original game.
 
 **Repository Policy**:
-- The **`main` branch** will remain unchanged to preserve the game exactly as it was in 1999. This ensures the original codebase remains available in its historical state.
-- For modernization efforts, bug fixes, and improvements, please use the branch: **[modern-rogue](https://github.com/Davidslv/rogue/tree/modern-rogue)**
+- The **`master` branch** remains unchanged to preserve the game exactly as it was in 1999. This ensures the original codebase remains available in its historical state, and the C sources here are byte-for-byte identical to the original import (commit `cf9bd26`).
+- For modernization efforts, bug fixes, and improvements, please use the branch: **[modernization](https://github.com/rcprcp/rogue/tree/modernization)**
+- Earlier revisions of this README referred to a `main` branch and a `modern-rogue` branch. Neither exists; the default branch is `master` and the modernization branch is `modernization`.
 - You are welcome to fork this repository and make your own modifications. Many have done so over the years, and I encourage continued development in your own forks.
 
 Thank you for your interest in preserving and improving this classic game! ❤️
+
+> **Warning: the game does not build from `master`.** The 1999 sources are
+> preserved here as-is, and they do not compile with a modern toolchain. The
+> failures are preserved deliberately. Switch to the **`modernization`**
+> branch to build and play. See [BUILD_ISSUES.md](BUILD_ISSUES.md) for the
+> original ncurses report.
+>
+> The build fails for more than one reason, and these are hit in order:
+>
+> 1. **Untyped function pointers.** Daemons and fuses are declared
+>    `void (*d_func)()`, so calls like `(*dev->d_func)(dev->d_arg)` are
+>    rejected with *"too many arguments to function; expected 0, have 1"*
+>    (`daemon.c:112`, `daemon.c:179`). The same empty-paren problem affects
+>    roughly 105 function definitions and ~97 header declarations.
+> 2. **Non-prototype declarations.** `my_exit()`, `fatal()` and many others
+>    are called with arguments but declared with empty parens, producing
+>    the same class of error (`main.c:106`, `main.c:131`).
+> 3. **ncurses internals.** Only once the above are fixed does compilation
+>    reach `main.c:241-242`, which writes `curscr->_cury` / `curscr->_curx`.
+>    These are not public ncurses API and are not available in modern
+>    libraries — this is the failure documented in [BUILD_ISSUES.md](BUILD_ISSUES.md).
 
 ---
 
@@ -40,6 +62,15 @@ Thank you for your interest in preserving and improving this classic game! ❤�
 ---
 
 ## Quick Start
+
+**On `master` the following will fail to compile** — for several independent
+reasons, listed in the warning in [About This Repository](#%EF%B8%8F-about-this-repository-%EF%B8%8F). Switch branches first:
+
+```bash
+git checkout modernization
+```
+
+Then:
 
 ```bash
 # Configure and build
